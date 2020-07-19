@@ -2,7 +2,7 @@
 
 In Kotlin it's not possible to use the `Feature`-Interface for enum features as in Java, because its `name`-method clashes with the builtin `name`-method of the enum class.
 
-Therefore this wrapper uses a plain enum without implementing `Feature` and provides a `FeatureProvider` to wrap it into a Feature. 
+Therefore, this wrapper uses a plain enum without implementing `Feature` and provides a `FeatureProvider` to wrap it into a Feature. 
 
 # Usage (with spring)
 
@@ -12,28 +12,28 @@ Import dependency:
 
 Create an enum for your feature toggles but don't extend the Togglz-Feature interface:
 
-```
+```kotlin
  enum class KotlinTestFeatures {
+
     @EnabledByDefault
     FOO,
 
     @Label("bar feature")
     BAR;
 
-    fun isActive(): Boolean {
-        return FeatureContext.getFeatureManager().isActive { name }
-    }
+    fun isActive(): Boolean = FeatureContext.getFeatureManager().isActive { name }
+   
 }
 ```
 
 
 Now, whenever you need a `Feature` you would create a Feature instance by using the name of your feature enum value as implementation: 
- `Feature { KotlinTestFeatures.BAR.name}` 
+ `Feature { KotlinTestFeatures.BAR.name }` 
 
 
 For this to work you need to create a spring configuration that creates a `FeatureManager`and a `FeatureProvider`:
 
-```
+```kotlin
 @Configuration
 class MyTogglzConfiguration {
 
@@ -60,27 +60,26 @@ class MyTogglzConfiguration {
 }
 ```
 
-
-##Enable all toggles
+## Enable all toggles
 
 for unit tests:
-```
+```kotlin
 val featureManager = FeatureManagerSupport.createFeatureManagerForTest(KotlinTestFeatures::class)
 FeatureManagerSupport.allEnabledFeatureConfig(featureManager)
 ```
 
 
 for spring acceptance tests:
-```
+```kotlin
 @Autowired
 val featureManager: FeatureManager
-....
+//....
 FeatureManagerSupport.allEnabledFeatureConfig(featureManager)
 ```
 
-##Enable one toggle
+## Enable one toggle
 
-```
+```kotlin
 FeatureManagerSupport.enable(Feature { KotlinTestFeatures.BAR.name })
 ```
 
